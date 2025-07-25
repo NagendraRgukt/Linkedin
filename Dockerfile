@@ -1,7 +1,7 @@
 FROM node:18-slim
 
 # Install Puppeteer dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     fonts-liberation \
     libasound2 \
@@ -17,19 +17,22 @@ RUN apt-get update && apt-get install -y \
     libxdamage1 \
     libxrandr2 \
     xdg-utils \
-    --no-install-recommends && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    wget \
+    gnupg \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
 
-# Copy files
+# Copy package files and install dependencies
 COPY package*.json ./
 RUN npm install
 
+# Copy the rest of the application
 COPY . .
 
+# Expose port for Render
 EXPOSE 3000
 
+# Start the server
 CMD ["node", "index.js"]
