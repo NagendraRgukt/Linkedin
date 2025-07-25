@@ -39,4 +39,4 @@ RUN npm install
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 # Start the app
-CMD ["node", "index.js"]
+CMD ["node", "index.js"] 
