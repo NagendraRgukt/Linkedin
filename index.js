@@ -8,7 +8,9 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 app.post('/comment', async (req, res) => {
-  const { postUrl, comment } = req.body;
+  const { postUrl, commentText } = req.body;
+ const comment = commentText; // Keep your original variable name working
+
 
   if (!postUrl || !comment) {
     return res.status(400).json({ error: 'Missing postUrl or comment' });
