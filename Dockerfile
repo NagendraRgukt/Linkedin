@@ -1,6 +1,6 @@
 FROM node:18-slim
 
-# Install Chromium and dependencies
+# Install Chromium dependencies
 RUN apt-get update && apt-get install -y \
   wget \
   ca-certificates \
@@ -26,17 +26,13 @@ RUN apt-get update && apt-get install -y \
   chromium \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
 
-# Copy all files
-COPY . .
-
-# Install dependencies
+COPY package*.json ./
 RUN npm install
 
-# Puppeteer will use Chromium installed by apt
+COPY . .
+
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Start the app
-CMD ["node", "index.js"] 
+CMD ["node", "index.js"]
