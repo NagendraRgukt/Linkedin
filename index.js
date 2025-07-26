@@ -21,14 +21,16 @@ app.post('/comment', async (req, res) => {
 
     browser = await puppeteer.launch({
       headless: 'new',
-      executablePath: '/usr/bin/chromium',
+      executablePath: puppeteer.executablePath(),
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
     const page = await browser.newPage();
-    await page.setCookie(...cookies);
+    await page.setDefaultNavigationTimeout(0);
+    await page.setDefaultTimeout(60000);
 
-    await page.goto(postUrl, { waitUntil: 'networkidle2', timeout: 0 });
+    await page.setCookie(...cookies);
+    await page.goto(postUrl, { waitUntil: 'networkidle2' });
 
     await page.waitForSelector('.comments-comment-box__form', { timeout: 15000 });
     await page.click('.comments-comment-box__form');
@@ -56,5 +58,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
+  console.log(`✅ Server is listening on port ${PORT}`);
 });
