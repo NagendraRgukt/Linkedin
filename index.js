@@ -22,6 +22,7 @@ app.post('/comment', async (req, res) => {
 });
 
 
+
     const page = await browser.newPage();
 
     const cookiesString = await fs.readFile('./linkedin-cookies.json');
