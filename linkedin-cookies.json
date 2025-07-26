@@ -1,8 +1,8 @@
 [
   {
     "name": "li_at",
-    "value": "AQEDATGiZfAC1-ZyAAABmAg58JoAAAGYWXU6_VYAxhrONvLb88NZ5byMznavFCK-nSDPTBtAHmrga0-tgSUUwPEjbxd61QKymapW9vjx3z5dosDH0JEqSULMC1C8Nx8Dw_UKWDWBtrSPEc79iwAWxrh-",
-    "domain": ".www.linkedin.com",
+    "value": "AQEDATGiZfAFrzaiAAABmEW27qEAAAGYacNyoVYAXuYhm-VGLzNsnECRciFCqtex19AeDccwuS50p_laiBX3ZkKDYNyhy6cRwqe_sPfc9LfjMebg2mThUHIu2chzH4o1SKhn_ZG7Qnti6FErEyYP1HI_",
+    "domain": ".linkedin.com",
     "path": "/",
     "secure": true,
     "httpOnly": true
@@ -10,23 +10,23 @@
   {
     "name": "JSESSIONID",
     "value": "\"ajax:3349713540918842207\"",
-    "domain": ".www.linkedin.com",
+    "domain": ".linkedin.com",
     "path": "/",
     "secure": true,
     "httpOnly": true
   },
   {
     "name": "bcookie",
-    "value": "v=1&20250626111413becd7d74-0f6d-4b16-8fa8-9d54a72f302fAQHh0IFhUPIz-0I5E_W27CbH8ihaq5mS",
-    "domain": ".www.linkedin.com",
+    "value": "v=2&201421c4-27e2-4837-81f0-7c966a1b62ac",
+    "domain": ".linkedin.com",
     "path": "/",
     "secure": true,
     "httpOnly": false
   },
   {
     "name": "lidc",
-    "value": "b=OB12:s=O:r=O:a=O:p=O:g=5206:u=157:x=1:i=1753510004:t=1753514043:v=2:sig=AQEE5ve5362cE9Rnwh5CmjOWOFScKt1R",
-    "domain": ".www.linkedin.com",
+    "value": "b=OB12:s=O:r=O:a=O:p=O:g=5206:u=157:x=1:i=1753516288:t=1753597699:v=2:sig=AQES9qfZhJpGbOAVN1PVvzbsZadCX__3",
+    "domain": ".linkedin.com",
     "path": "/",
     "secure": true,
     "httpOnly": false
