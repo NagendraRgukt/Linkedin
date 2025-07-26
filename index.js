@@ -30,7 +30,10 @@ app.post('/comment', async (req, res) => {
     await page.setDefaultTimeout(60000);
 
     await page.setCookie(...cookies);
-    await page.goto(postUrl, { waitUntil: 'networkidle2' });
+    await page.goto('https://www.linkedin.com/feed/', { waitUntil: 'networkidle2' });
+const loggedIn = await page.$('img.global-nav__me-photo');
+console.log('Logged in:', !!loggedIn);
+
 
     await page.waitForSelector('.comments-comment-box__form', { timeout: 15000 });
     await page.click('.comments-comment-box__form');
