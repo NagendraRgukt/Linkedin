@@ -8,40 +8,46 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 app.post('/comment', async (req, res) => {
-  const { postUrl, commentText } = req.body;
+  const { postUrl, comment } = req.body;
 
-  if (!postUrl || !commentText) {
-    return res.status(400).json({ error: 'Missing postUrl or commentText' });
+  if (!postUrl || !comment) {
+    return res.status(400).json({ error: 'Missing postUrl or comment' });
   }
 
+  let browser;
+
   try {
-    const browser = await puppeteer.launch({
-  headless: true,
-  executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
-  args: ['--no-sandbox', '--disable-setuid-sandbox']
-});
+    const cookies = JSON.parse(await fs.readFile('./linkedin-cookies.json', 'utf-8'));
 
-
+    browser = await puppeteer.launch({
+      headless: 'new',
+      executablePath: '/usr/bin/chromium',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
 
     const page = await browser.newPage();
-
-    const cookiesString = await fs.readFile('./linkedin-cookies.json');
-    const cookies = JSON.parse(cookiesString);
     await page.setCookie(...cookies);
 
-    await page.goto(postUrl, { waitUntil: 'networkidle2' });
+    await page.goto(postUrl, { waitUntil: 'networkidle2', timeout: 0 });
 
-    await page.waitForSelector('[aria-label="Add a comment"]', { timeout: 10000 });
-    await page.click('[aria-label="Add a comment"]');
-    await page.keyboard.type(commentText);
-    await page.keyboard.press('Enter');
+    await page.waitForSelector('.comments-comment-box__form', { timeout: 15000 });
+    await page.click('.comments-comment-box__form');
 
-    await browser.close();
+    await page.waitForSelector('div[contenteditable="true"]', { timeout: 15000 });
+    await page.type('div[contenteditable="true"]', comment);
 
-    res.json({ status: 'Comment posted successfully' });
-  } catch (error) {
-    console.error('Error commenting on LinkedIn:', error.message);
-    res.status(500).json({ error: 'Failed to comment on LinkedIn post', details: error.message });
+    await page.click('button.comments-comment-box__submit-button');
+
+    await page.waitForTimeout(5000);
+
+    res.json({ message: 'Comment posted successfully!' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to comment on LinkedIn post', details: err.message });
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
   }
 });
 
@@ -50,5 +56,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Server is running on port ${PORT}`);
+  console.log(`Server is listening on port ${PORT}`);
 });
