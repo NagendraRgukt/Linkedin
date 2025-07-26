@@ -1,9 +1,9 @@
+# Use slim Node image
 FROM node:18-slim
 
-# Install Chromium manually from Debian and required dependencies
+# Install Chromium dependencies
 RUN apt-get update && apt-get install -y \
-  wget \
-  gnupg \
+  chromium \
   ca-certificates \
   fonts-liberation \
   libasound2 \
@@ -36,23 +36,19 @@ RUN apt-get update && apt-get install -y \
   libxrender1 \
   libxss1 \
   libxtst6 \
-  chromium \
-  --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
+  wget \
+  --no-install-recommends && \
+  apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Ensure the Chromium binary is available
-RUN ln -s /usr/bin/chromium /usr/bin/chromium-browser || true
+# Puppeteer needs this to find Chromium
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Set Puppeteer to use system Chromium
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
-
-# Create app directory
+# Set working directory
 WORKDIR /app
 
-# Copy files
+# Copy files and install dependencies
 COPY . .
-
-# Install dependencies
 RUN npm install
 
-# Start the server
-CMD ["npm", "start"]
+# Start server
+CMD ["node", "index.js"]
