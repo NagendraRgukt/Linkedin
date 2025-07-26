@@ -1,8 +1,8 @@
 FROM node:18-slim
 
-# Install necessary dependencies for Puppeteer and Chromium
+# Install Chromium and required dependencies
 RUN apt-get update && apt-get install -y \
-  chromium-browser \
+  chromium \
   ca-certificates \
   fonts-liberation \
   libasound2 \
@@ -38,17 +38,20 @@ RUN apt-get update && apt-get install -y \
   wget \
   --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Set Puppeteer to use Chromium installed in system
+# Create symlink if chromium is installed as /usr/bin/chromium
+RUN ln -s /usr/bin/chromium /usr/bin/chromium-browser || true
+
+# Set Puppeteer to use system Chromium
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Create app directory
 WORKDIR /app
 
-# Copy app files
+# Copy files
 COPY . .
 
-# Install npm dependencies
+# Install dependencies
 RUN npm install
 
-# Start server
+# Start the server
 CMD ["npm", "start"]
