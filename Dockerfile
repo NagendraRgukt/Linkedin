@@ -1,8 +1,9 @@
 FROM node:18-slim
 
-# Install Chromium and required dependencies
+# Install Chromium manually from Debian and required dependencies
 RUN apt-get update && apt-get install -y \
-  chromium \
+  wget \
+  gnupg \
   ca-certificates \
   fonts-liberation \
   libasound2 \
@@ -35,10 +36,10 @@ RUN apt-get update && apt-get install -y \
   libxrender1 \
   libxss1 \
   libxtst6 \
-  wget \
+  chromium \
   --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Create symlink if chromium is installed as /usr/bin/chromium
+# Ensure the Chromium binary is available
 RUN ln -s /usr/bin/chromium /usr/bin/chromium-browser || true
 
 # Set Puppeteer to use system Chromium
