@@ -1,8 +1,8 @@
 FROM node:18-slim
 
-# Install necessary dependencies
+# Install necessary dependencies for Puppeteer and Chromium
 RUN apt-get update && apt-get install -y \
-  chromium \
+  chromium-browser \
   ca-certificates \
   fonts-liberation \
   libasound2 \
@@ -36,19 +36,19 @@ RUN apt-get update && apt-get install -y \
   libxss1 \
   libxtst6 \
   wget \
-  --no-install-recommends && apt-get clean
+  --no-install-recommends && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Set Puppeteer to use Chromium installed in system
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Create app directory
 WORKDIR /app
 
-# Copy code
+# Copy app files
 COPY . .
 
-# Set Puppeteer to use the installed Chromium
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
-
-# Install dependencies
+# Install npm dependencies
 RUN npm install
 
-# Start the app
-CMD ["node", "index.js"]
+# Start server
+CMD ["npm", "start"]
