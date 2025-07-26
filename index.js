@@ -1,65 +1,54 @@
 import express from 'express';
-import puppeteer from 'puppeteer';
-import fs from 'fs/promises';
+import puppeteer from 'puppeteer-core';
+import bodyParser from 'body-parser';
+import fs from 'fs';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
+app.use(bodyParser.json());
+
+app.get('/', (_, res) => {
+  res.send('LinkedIn Comment Bot is running.');
+});
 
 app.post('/comment', async (req, res) => {
-  const { postUrl, comment } = req.body;
+  const { postUrl, commentText, cookies } = req.body;
 
-  if (!postUrl || !comment) {
-    return res.status(400).json({ error: 'Missing postUrl or comment' });
+  if (!postUrl || !commentText || !cookies) {
+    return res.status(400).json({ error: 'Missing required fields' });
   }
 
   let browser;
-
   try {
-    const cookies = JSON.parse(await fs.readFile('./linkedin-cookies.json', 'utf-8'));
-
     browser = await puppeteer.launch({
       headless: 'new',
-      executablePath: puppeteer.executablePath(),
+      executablePath: '/usr/bin/chromium',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
     const page = await browser.newPage();
-    await page.setDefaultNavigationTimeout(0);
-    await page.setDefaultTimeout(60000);
-
     await page.setCookie(...cookies);
-    await page.goto('https://www.linkedin.com/feed/', { waitUntil: 'networkidle2' });
-const loggedIn = await page.$('img.global-nav__me-photo');
-console.log('Logged in:', !!loggedIn);
+    await page.goto(postUrl, { waitUntil: 'networkidle2' });
 
+    await page.waitForSelector('button[aria-label="Leave a comment"]', { timeout: 10000 });
+    await page.click('button[aria-label="Leave a comment"]');
 
-    await page.waitForSelector('.comments-comment-box__form', { timeout: 15000 });
-    await page.click('.comments-comment-box__form');
+    await page.waitForSelector('div[contenteditable="true"]', { timeout: 10000 });
+    await page.type('div[contenteditable="true"]', commentText);
+    await page.keyboard.press('Enter');
 
-    await page.waitForSelector('div[contenteditable="true"]', { timeout: 15000 });
-    await page.type('div[contenteditable="true"]', comment);
+    await page.waitForTimeout(3000); // wait to confirm post
 
-    await page.click('button.comments-comment-box__submit-button');
-
-    await page.waitForTimeout(5000);
-
-    res.json({ message: 'Comment posted successfully!' });
+    res.json({ success: true, message: 'Comment posted successfully!' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to comment on LinkedIn post', details: err.message });
   } finally {
-    if (browser) {
-      await browser.close();
-    }
+    if (browser) await browser.close();
   }
 });
 
-app.get('/', (req, res) => {
-  res.send('LinkedIn Comment Bot is running.');
-});
-
 app.listen(PORT, () => {
-  console.log(`✅ Server is listening on port ${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
