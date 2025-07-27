@@ -22,10 +22,11 @@ app.post('/comment', async (req, res) => {
   let browser;
   try {
     browser = await puppeteer.launch({
-      headless: 'new',
-      executablePath: '/usr/bin/chromium',
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
+  headless: 'new',
+  executablePath: '/usr/bin/chromium',
+  args: ['--no-sandbox', '--disable-setuid-sandbox'],
+});
+
 
     const page = await browser.newPage();
     await page.setCookie(...cookies);
