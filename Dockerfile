@@ -1,9 +1,11 @@
 FROM node:18-slim
 
-# Install Chromium dependencies
+# Puppeteer v19+ requires extra dependencies for Chromium
 RUN apt-get update && apt-get install -y \
+    wget \
     ca-certificates \
     fonts-liberation \
+    libappindicator3-1 \
     libasound2 \
     libatk-bridge2.0-0 \
     libatk1.0-0 \
@@ -17,26 +19,21 @@ RUN apt-get update && apt-get install -y \
     libxdamage1 \
     libxrandr2 \
     xdg-utils \
-    libgbm1 \
-    libxshmfence1 \
-    libglu1-mesa \
-    wget \
-    unzip \
     --no-install-recommends && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*
 
-# Install Chromium manually
-RUN wget https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/1222956/chrome-linux.zip && \
-    unzip chrome-linux.zip && \
-    mv chrome-linux /opt/chromium && \
-    ln -s /opt/chromium/chrome /usr/bin/chromium && \
-    rm chrome-linux.zip
-
+# Set working directory
 WORKDIR /app
+
+# Copy your source files
+COPY package*.json ./
 COPY . .
 
-RUN npm install
+# Install dependencies (this will also download Chromium via Puppeteer)
+RUN npm install --force
 
+# Expose your Puppeteer bot on a port
 EXPOSE 3000
 
+# Start the bot
 CMD ["node", "index.js"]
