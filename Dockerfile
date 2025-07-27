@@ -32,14 +32,11 @@ RUN wget https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/122
     ln -s /opt/chromium/chrome /usr/bin/chromium && \
     rm chrome-linux.zip
 
-# Set working directory
 WORKDIR /app
-
-# Copy all files
 COPY . .
 
-# Install dependencies
 RUN npm install
 
-# Run the app
-CMD ["npm", "start"]
+EXPOSE 3000
+
+CMD ["node", "index.js"]
